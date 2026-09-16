@@ -51,7 +51,7 @@ const steps = [
 ]
 
 function Logo({ compact = false }) {
-  return <a className="logo" href="#top" aria-label="Autonexa AI home"><img className="logo-image" src="/autonexa-logo.svg" alt="Autonexa AI" /></a>
+  return <a className="logo" href="#top" aria-label="Autonexa AI home"><img className="logo-image" src="/autonexa-professional-logo.svg" alt="Autonexa AI" /></a>
 }
 
 function SocialIcon({ type }) {
