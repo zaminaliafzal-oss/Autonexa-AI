@@ -68,10 +68,42 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [demoStep, setDemoStep] = useState(0)
   const [formSent, setFormSent] = useState(false)
+  const [formSending, setFormSending] = useState(false)
+  const [formError, setFormError] = useState('')
+  const [formData, setFormData] = useState({
+    name: '',
+    business: '',
+    email: '',
+    whatsapp: '',
+    industry: '',
+    message: '',
+  })
 
-  const handleSubmit = (event) => {
+  const updateField = (field) => (event) => {
+    setFormData((prev) => ({ ...prev, [field]: event.target.value }))
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setFormSent(true)
+    setFormError('')
+    setFormSending(true)
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || 'Something went wrong. Please try again.')
+      }
+      setFormSent(true)
+      setFormData({ name: '', business: '', email: '', whatsapp: '', industry: '', message: '' })
+    } catch (error) {
+      setFormError(error.message || 'Something went wrong. Please try again.')
+    } finally {
+      setFormSending(false)
+    }
   }
 
   return (
@@ -134,7 +166,7 @@ function App() {
 
         <section className="section cta-section"><div className="container cta-inner"><div><span className="section-label">YOUR NEXT SYSTEM STARTS HERE</span><h2>Have a process you<br /><em>want to automate?</em></h2><p>Tell us what takes up your team's time. We'll show you how AI automation can handle it.</p></div><div className="cta-actions"><Button>Book a Free Demo</Button><Button variant="ghost" href="#contact">Talk to Autonexa AI <MessageSquareText size={16} /></Button></div></div></section>
 
-        <section className="section contact-section" id="contact"><div className="container contact-layout"><div className="contact-copy"><span className="section-label">LET'S BUILD YOUR AUTOMATION</span><h2>Make your next<br /><em>move a smart one.</em></h2><p>Share a little about your business and the work you'd like to automate. We'll come back with a practical next step.</p><div className="contact-options"><a href="mailto:zaminaliafzal2@gmail.com"><span><Send size={16} /></span><div><small>Email</small><b>zaminaliafzal2@gmail.com</b></div></a><a href="https://wa.me/923044277292" target="_blank" rel="noreferrer"><span><MessageSquareText size={16} /></span><div><small>WhatsApp</small><b>+92 304 4277292</b></div></a><a href="https://www.linkedin.com/in/zamin-ali-afzal/" target="_blank" rel="noreferrer"><span><Globe2 size={16} /></span><div><small>LinkedIn</small><b>linkedin.com/in/zamin-ali-afzal</b></div></a></div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Full name<input required placeholder="Jane Smith" /></label><label>Business name<input required placeholder="Your company" /></label></div><div className="form-row"><label>Email address<input required type="email" placeholder="jane@company.com" /></label><label>WhatsApp <span>(optional)</span><input placeholder="+1 555 000 0000" /></label></div><label>Business type<select defaultValue=""><option value="" disabled>Select an industry</option><option>Healthcare</option><option>Real estate</option><option>Professional services</option><option>E-commerce</option><option>Other</option></select></label><label>What would you like to automate?<textarea required placeholder="Tell us about the repetitive work you want to remove..." rows="4" /></label><button className="button form-button" type="submit">{formSent ? 'Request received' : 'Request Free Demo'} {formSent ? <Check size={16} /> : <ArrowUpRight size={16} />}</button>{formSent && <p className="form-success"><Check size={14} /> Thanks. We will be in touch shortly.</p>}</form></div></section>
+        <section className="section contact-section" id="contact"><div className="container contact-layout"><div className="contact-copy"><span className="section-label">LET'S BUILD YOUR AUTOMATION</span><h2>Make your next<br /><em>move a smart one.</em></h2><p>Share a little about your business and the work you'd like to automate. We'll come back with a practical next step.</p><div className="contact-options"><a href="mailto:zaminaliafzal2@gmail.com"><span><Send size={16} /></span><div><small>Email</small><b>zaminaliafzal2@gmail.com</b></div></a><a href="https://wa.me/923044277292" target="_blank" rel="noreferrer"><span><MessageSquareText size={16} /></span><div><small>WhatsApp</small><b>+92 304 4277292</b></div></a><a href="https://www.linkedin.com/in/zamin-ali-afzal/" target="_blank" rel="noreferrer"><span><Globe2 size={16} /></span><div><small>LinkedIn</small><b>linkedin.com/in/zamin-ali-afzal</b></div></a></div></div><form className="contact-form" onSubmit={handleSubmit}><div className="form-row"><label>Full name<input required name="name" value={formData.name} onChange={updateField('name')} placeholder="Jane Smith" /></label><label>Business name<input required name="business" value={formData.business} onChange={updateField('business')} placeholder="Your company" /></label></div><div className="form-row"><label>Email address<input required type="email" name="email" value={formData.email} onChange={updateField('email')} placeholder="jane@company.com" /></label><label>WhatsApp <span>(optional)</span><input name="whatsapp" value={formData.whatsapp} onChange={updateField('whatsapp')} placeholder="+1 555 000 0000" /></label></div><label>Business type<select name="industry" value={formData.industry} onChange={updateField('industry')}><option value="" disabled>Select an industry</option><option>Healthcare</option><option>Real estate</option><option>Professional services</option><option>E-commerce</option><option>Other</option></select></label><label>What would you like to automate?<textarea required name="message" value={formData.message} onChange={updateField('message')} placeholder="Tell us about the repetitive work you want to remove..." rows="4" /></label><button className="button form-button" type="submit" disabled={formSending}>{formSending ? 'Sending...' : formSent ? 'Request received' : 'Request Free Demo'} {formSent ? <Check size={16} /> : <ArrowUpRight size={16} />}</button>{formError && <p className="form-error">{formError}</p>}{formSent && <p className="form-success"><Check size={14} /> Thanks. We will be in touch shortly.</p>}</form></div></section>
       </main>
 
       <footer className="site-footer"><div className="container footer-main"><div className="footer-brand"><Logo /></div><div className="footer-links"><div><span>Explore</span><a href="#solutions">Solutions</a><a href="#services">Services</a><a href="#industries">Industries</a></div><div><span>Company</span><a href="#how-it-works">How It Works</a><a href="#about">About</a><a href="#contact">Contact</a></div></div><div className="footer-social"><span>Follow the build</span><div><a href="https://www.linkedin.com/in/zamin-ali-afzal/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><SocialIcon type="linkedin" /></a><a href="https://www.instagram.com/neuro_zamin12/" target="_blank" rel="noreferrer" aria-label="Instagram"><SocialIcon type="instagram" /></a><a href="mailto:zaminaliafzal2@gmail.com" aria-label="Email"><SocialIcon type="email" /></a></div></div></div><div className="container footer-bottom"><span>© 2026 Autonexa AI. All rights reserved.</span><span>Built for a more intelligent way of working.</span><a href="#top">Back to top <ArrowUpRight size={13} /></a></div></footer>
