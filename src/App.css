@@ -182,3 +182,18 @@
     border-right-color: var(--border);
   }
 }
+
+.form-success {
+  color: #1a9c5b;
+  font-weight: 600;
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.form-error {
+  color: #d9463c;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
